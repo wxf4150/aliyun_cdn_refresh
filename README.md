@@ -1,1 +1,1 @@
-# ali_cdn_refresh
+# aliyun cdn refresh
