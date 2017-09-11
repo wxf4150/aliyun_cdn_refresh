@@ -20,11 +20,6 @@ import (
 	"io/ioutil"
 )
 
-const (
-	AccessKeySecret = ""
-	AccessKeyId = ""
-)
-
 // Additional function for function SignHeader.
 func newHeaderSorter(m map[string]string) *headerSorter {
 	hs := &headerSorter{
@@ -66,7 +61,7 @@ func (hs *headerSorter) Swap(i, j int) {
 	hs.Keys[i], hs.Keys[j] = hs.Keys[j], hs.Keys[i]
 }
 
-func RefrechUrl(refreshUrl string) (err error) {
+func RefrechUrl(accessKeyId, accessKeySecret, refreshUrl string) (err error) {
 	HTTPMethod := "GET"
 	//copy from alidoc https://help.aliyun.com/document_detail/27149.html?spm=5176.doc27200.6.608.CGJfd2
 	params := map[string]string{}
@@ -77,7 +72,7 @@ func RefrechUrl(refreshUrl string) (err error) {
 	}
 	//Timestamp  AccessKeyId  SignatureNonce
 	params["Timestamp"] = time.Now().UTC().Format(time.RFC3339)
-	params["AccessKeyId"] = AccessKeyId
+	params["AccessKeyId"] = accessKeyId
 	params["SignatureNonce"] = getGuid()
 
 
@@ -105,7 +100,7 @@ func RefrechUrl(refreshUrl string) (err error) {
 
 	h := hmac.New(func() hash.Hash {
 		return sha1.New()
-	}, []byte(AccessKeySecret+"&"))
+	}, []byte(accessKeySecret +"&"))
 	io.WriteString(h, stringToSign)
 	signedStr := base64.StdEncoding.EncodeToString(h.Sum(nil))
 	params["Signature"] = percentEncode(signedStr)
